@@ -5,7 +5,8 @@
 # - update code to use that module
 
 import time
-from Adafruit_BME280 import *
+import board
+from adafruit_bme280 import basic as adafruit_bme280
 import math
 import csv
 import numpy as np
