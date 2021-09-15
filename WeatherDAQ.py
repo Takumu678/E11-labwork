@@ -10,13 +10,16 @@ from adafruit_bme280 import basic as adafruit_bme280
 import math
 import csv
 import numpy as np
-sensor = BME280(t_mode=BME280_OSAMPLE_8, p_mode=BME280_OSAMPLE_8, h_mode = BME280_OSAMPLE_8)
+
+i12c = board.I2C()
+bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 
 temperatures = []
 pressures = []
 humidities = []
 times = []
 
+bme280.sea_level_pressure = 1013.25
 
 start_time = time.time()
 run_time = 10
@@ -26,15 +29,15 @@ current_time = time.time()
 
 while current_time < stop_time: 
 	
-	temp = sensor.read_temperature()
+	temp = bme280.temperature
 	current_time = time.time()
 	times.append(current_time)
 	temperatures.append(temp)
 	
-	press = sensor.read_pressure()
+	press = bme280.pressure
 	pressures.append(press)
 	
-	humid = sensor.read_humidity()
+	humid = bme280.relative_humidity
 	humidities.append(humid)
 	
 	time.sleep(1)
@@ -70,14 +73,10 @@ with file:
     header = ['Time (Unix)', 'Temperatures(Celsius)', 'Pressure(Hectopascals)','Humidity']
     writer = csv.DictWriter(file, fieldnames = header)
     writer.writeheader()
-    # writing data row-wise into the csv file
+    #writing data row-wise into the csv file
   	
     while i < length:
-		writer.writerow({'Time (Unix)':times_int[i],
-						'Temperatures(Celsius)':temperatures[i],
-						'Pressure(Hectopascals)':pressures[i],
-						'Humidity':humidities[i]})
-		i = i + 1
-						
+		writer.writerow({'Time (Unix)':times_int[i],'Temperatures(Celsius)':temperatures[i],'Pressure(Hectopascals)':pressures[i],'Humidity':humidities[i]})
+	    i+=1
 
  
